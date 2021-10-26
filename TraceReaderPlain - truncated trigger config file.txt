@@ -1,0 +1,3 @@
+transaction_name 	 "Create PDP Context Request"
+transaction_start_trigger 	 "Call #[0-9]+\r\n"
+msg_timestamp_trigger 	 "Message #\d+\t\w+ \d{2} \w+ \d{4} \d{2}:\d{2}:\d{2}\.\d{3}\t"

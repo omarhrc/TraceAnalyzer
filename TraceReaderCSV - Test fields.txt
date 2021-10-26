@@ -1,0 +1,16 @@
+Date	 datetime64
+Start Time	 object
+End Time	 object
+Traffic group	 object
+Protocol	 object
+#Messages	 int64
+Any Protocol A Number	 object
+Any Protocol B Number	 object 
+Any Protocol IMSI	 object
+IP Source Address	 object
+IP Dest Address	 object
+GTP Message	 object
+GTP Version	 object
+GTP IMSI	 object
+GTP MSISDN	 object
+GTP Radio Access Technology	 object
