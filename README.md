@@ -17,6 +17,9 @@ trace_analyzer_constants.py
 Unit testing is possible via:
 
 trace_analyzer_tests.py
+
+and test configuration files:
+
 TraceReaderCSV - Test fields.txt
 TraceReaderPlain - config empty file.txt
 TraceReaderPlain - config file.txt
