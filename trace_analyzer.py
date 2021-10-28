@@ -306,6 +306,7 @@ class TransactionTraceContext():
     ''' Context to implement transaction trace state machine '''
 
     def __init__(self, transaction_triggers):
+        self.trigger_matches = []
         self.current_trigger = None
         self.current_section_trigger = None
         self.current_transaction_index = 0
@@ -376,16 +377,19 @@ class TransactionTraceSearchForStart(TransactionTraceState):
             makes it the current trigger and move to next state
         '''
         transaction_triggers = self.context.get_triggers()
+        trigger_matches = []
         for trigger in transaction_triggers:
             match = re.search(trigger.transaction_start_trigger,
                               input_line)
             if match:
-                self.context.current_transaction_index += 1
-                tid = self.context.current_transaction_index
-                print(f'Transaction = {tid}')
-                self.context.current_transaction = Transaction(tid, trigger)
-                self.context.set_state(self.context.state_collect_time)
-                return
+                trigger_matches.append(trigger)
+        if trigger_matches:
+            self.context.trigger_matches = trigger_matches
+            self.context.current_transaction_index += 1
+            print(f'Transaction = {self.context.current_transaction_index}')
+            self.context.current_transaction = None
+            self.context.set_state(self.context.state_collect_time)
+
 
     def empty_line(self):
         ''' Keeps searching '''
@@ -397,7 +401,23 @@ class TransactionTraceCollectTime(TransactionTraceState):
 
     def process_line(self, input_line):
         transaction = self.context.current_transaction
-        trigger = transaction.get_trigger()
+        if transaction:
+            trigger = transaction.get_trigger()
+            self.collect_info(input_line, transaction, trigger)
+        else:
+            for trigger in self.context.trigger_matches:
+                tid = self.context.current_transaction_index    
+                transaction = Transaction(tid, trigger)
+                groups = self.collect_info(input_line, transaction, trigger)
+                if groups:
+                    # groups[2] contains the transaction type
+                    if trigger.transaction_name in groups[2]:
+                        self.context.current_transaction = transaction
+                        break
+    
+    def collect_info(self, input_line, transaction, trigger):
+        ''' TransactionTraceCollectTime helper function '''
+        groups = []
         match = re.match(trigger.msg_timestamp_trigger, input_line)
         if match:
             groups = match.groups()
@@ -405,7 +425,9 @@ class TransactionTraceCollectTime(TransactionTraceState):
             message_id = groups[0]
             transaction.set_field(message_id, 'message_id', message_id)
             transaction.set_field(message_id, 'timestamp', groups[1])
-            transaction.set_field(message_id, 'type', groups[2])
+            transaction.set_field(message_id, 'type', groups[2]) 
+        return groups
+        
 
     def empty_line(self):
         ''' All timestamps collected. Capture individual messages'''

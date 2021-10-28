@@ -10,7 +10,7 @@ from trace_analyzer import TraceReaderPlain
 TRACE_READER_PLAIN_CONFIG_FILE = 'TraceReaderPlain - config file.txt'
 #INPUT_TRACE = 'TraceReaderPlain - Test trace.txt'
 INPUT_TRACE = 'VF - GTP - Create PDP_Session - 081021.txt'
-OUTPUT_FILE = 'TraceReaderOut.xlsx'
+OUTPUT_FILE = 'TraceReaderOut - 271021.xlsx'
 
 
 def main():
